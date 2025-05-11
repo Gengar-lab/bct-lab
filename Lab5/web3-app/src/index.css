@@ -1,0 +1,100 @@
+:root {
+  /* Common theme colors */
+  --primary: #0ea5e9;
+  --secondary: #10b981;
+  --accent: #8b5cf6;
+  --danger: #ef4444;
+  --dark: #0f172a;
+  --dark-2: #1e293b;
+  --dark-3: #334155;
+  --light: #f8f9fa;
+  --light-2: #e2e8f0;
+  --light-3: #cbd5e1;
+  
+  /* Reusable styles */
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --radius: 0.5rem;
+  
+  /* Base font settings */
+  font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  
+  /* Theme settings */
+  color-scheme: light dark;
+  color: var(--light);
+  background-color: var(--dark);
+  
+  /* Font rendering */
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Global reset and base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--dark) 0%, var(--dark-2) 100%);
+}
+
+/* Typography basics */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+/* Default button styles - will be overridden in App.css when needed */
+button {
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--dark-2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button:hover:not(:disabled) {
+  background-color: var(--dark-3);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--primary);
+}
+
+/* Light mode overrides */
+@media (prefers-color-scheme: light) {
+  :root {
+    color: var(--dark);
+    background-color: var(--light);
+  }
+  
+  body {
+    background: linear-gradient(135deg, var(--light) 0%, var(--light-2) 100%);
+  }
+  
+  button {
+    background-color: var(--light-2);
+  }
+  
+  button:hover:not(:disabled) {
+    background-color: var(--light-3);
+  }
+}

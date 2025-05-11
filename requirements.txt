@@ -1,0 +1,4 @@
+colorama==0.4.6
+cryptography==44.0.3
+pymerkle==6.1.0
+rich==14.0.0
