@@ -1,6 +1,6 @@
 # Comprehensive Distributed Systems Study Guide
 
-This Markdown file is a comprehensive, visually enhanced resource for your end-semester exam, compiling all content from the provided study materials (`L_10.pdf`, `L_8_9.pdf`, `L_6.pdf`, `L_7.pdf`). It offers 10 times more theoretical depth than the original, with extensive explanations, formal definitions, practical examples, and professional **Graphviz** and **PlantUML** diagrams optimized for GitHub rendering. Notations like `R(x)` and `W(x)` are replaced with clear terms like "Read x" and "Write x," and diagrams use vertical lifelines and cross lines to depict process interactions. New sections on fault tolerance, consensus algorithms, and modern applications (e.g., cloud computing, microservices) enhance the guide’s scope. All UML and Graphviz codes are corrected for accuracy and clarity.
+This Markdown file is a comprehensive, visually enhanced resource for your end-semester exam, compiling all content from the provided study materials (`L_10.pdf`, `L_8_9.pdf`, `L_6.pdf`, `L_7.pdf`). It offers 10 times more theoretical depth than the original, with extensive explanations, formal definitions, practical examples, and **Mermaid** diagrams optimized for GitHub rendering. Notations like `R(x)` and `W(x)` are replaced with clear terms like "Read x" and "Write x," and diagrams use vertical lifelines and cross lines to depict process interactions. New sections on fault tolerance, consensus algorithms, and modern applications (e.g., cloud computing, microservices) enhance the guide’s scope. All diagrams use Mermaid syntax for GitHub compatibility.
 
 ## Table of Contents
 
@@ -260,23 +260,19 @@ A **distributed system** is a collection of independent computers (nodes) that c
 
 **Diagram**: Distributed System Architecture
 
-```dot
-digraph distributed_system {
-  rankdir=LR;
-  node [shape=box, style=filled, fillcolor=lightblue, fontsize=12];
-  edge [color=navy];
-  Client [label="Client"];
-  LB [label="Load Balancer"];
-  Node1 [label="Node 1"];
-  Node2 [label="Node 2"];
-  Node3 [label="Node 3"];
-  Node4 [label="Node 4"];
-  Client -> LB [label="Request"];
-  LB -> Node1 [label="Route"];
-  LB -> Node2 [label="Route"];
-  Node1 -> Node3 [label="Network", style=dashed];
-  Node2 -> Node4 [label="Network", style=dashed];
-}
+```mermaid
+graph LR
+    Client --> LB[Load Balancer]
+    LB --> Node1[Node 1]
+    LB --> Node2[Node 2]
+    Node1 --> Node3[Node 3]
+    Node2 --> Node4[Node 4]
+    style Client fill:#add8e6,stroke:#333
+    style LB fill:#add8e6,stroke:#333
+    style Node1 fill:#add8e6,stroke:#333
+    style Node2 fill:#add8e6,stroke:#333
+    style Node3 fill:#add8e6,stroke:#333
+    style Node4 fill:#add8e6,stroke:#333
 ```
 
 ### Theoretical Foundations
@@ -294,6 +290,8 @@ digraph distributed_system {
 - **Event Model**: Events \( e \in E \) (send, receive, internal) with partial order \( \rightarrow \).
 - **State Machine**: System as a state machine \( (S, s_0, \delta, F) \), where \( S \) is states, \( s_0 \) is initial state, \( \delta \) is transition function, and \( F \) is final states.
 - **Lamport Clocks**: Assign timestamps \( C(e) \) to events, ensuring \( e_1 \rightarrow e_2 \implies C(e_1) < C(e_2) \).
+
+---
 
 ## 2. Message-Oriented Communications
 
@@ -327,30 +325,26 @@ Message-oriented communication enables loose coupling via message exchange, unli
 
 **Diagram**: Persistent Communication
 
-```plantuml
-@startuml
-actor Sender
-participant "Message Store" as Store
-participant Receiver
-
-Sender -> Store: Send Message
-Store -> Receiver: Deliver (when active)
-note right: Persistent: Stored until delivery
-@enduml
+```mermaid
+sequenceDiagram
+    participant Sender
+    participant Store as Message Store
+    participant Receiver
+    Sender->>Store: Send Message
+    Store->>Receiver: Deliver (when active)
+    Note right of Receiver: Persistent: Stored until delivery
 ```
 
 **Diagram**: Transient Communication
 
-```plantuml
-@startuml
-actor Sender
-participant Network
-participant Receiver
-
-Sender -> Network: Send Message
-Network -> Receiver: Deliver (if active)
-note right: Transient: Discarded if offline
-@enduml
+```mermaid
+sequenceDiagram
+    participant Sender
+    participant Network
+    participant Receiver
+    Sender->>Network: Send Message
+    Network->>Receiver: Deliver (if active)
+    Note right of Receiver: Transient: Discarded if offline
 ```
 
 ### Forms of Communication
@@ -366,30 +360,26 @@ note right: Transient: Discarded if offline
 
 **Diagram**: Persistent Asynchronous
 
-```plantuml
-@startuml
-actor Sender
-participant Queue
-participant Receiver
-
-Sender -> Queue: Send Message
-Sender --> Sender: Continue
-Queue -> Receiver: Deliver (later)
-note right: Persistent Asynchronous
-@enduml
+```mermaid
+sequenceDiagram
+    participant Sender
+    participant Queue
+    participant Receiver
+    Sender->>Queue: Send Message
+    Sender-->>Sender: Continue
+    Queue->>Receiver: Deliver (later)
+    Note right of Receiver: Persistent Asynchronous
 ```
 
 **Diagram**: Transient Synchronous
 
-```plantuml
-@startuml
-actor Sender
-participant Receiver
-
-Sender -> Receiver: Send Request
-Receiver --> Sender: Reply
-note right: Transient Synchronous
-@enduml
+```mermaid
+sequenceDiagram
+    participant Sender
+    participant Receiver
+    Sender->>Receiver: Send Request
+    Receiver-->>Sender: Reply
+    Note right of Receiver: Transient Synchronous
 ```
 
 ### Message-Oriented Transient Communication
@@ -410,18 +400,16 @@ note right: Transient Synchronous
 
 **Diagram**: Berkeley Sockets
 
-```plantuml
-@startuml
-actor Client
-participant Server
-
-Client -> Server: connect()
-Server --> Client: accept()
-Client -> Server: send("Data")
-Server --> Client: recv("Data")
-Client -> Server: close()
-note right: Berkeley Sockets
-@enduml
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+    Client->>Server: connect()
+    Server-->>Client: accept()
+    Client->>Server: send("Data")
+    Server-->>Client: recv("Data")
+    Client->>Server: close()
+    Note right of Server: Berkeley Sockets
 ```
 
 #### Message Passing Interface (MPI)
@@ -438,15 +426,13 @@ note right: Berkeley Sockets
 
 **Diagram**: MPI
 
-```plantuml
-@startuml
-participant "Process 0" as P0
-participant "Process 1" as P1
-
-P0 -> P1: MPI_send("Data")
-P1 --> P0: MPI_recv("Data")
-note right: MPI Communication
-@enduml
+```mermaid
+sequenceDiagram
+    participant P0 as Process 0
+    participant P1 as Process 1
+    P0->>P1: MPI_send("Data")
+    P1-->>P0: MPI_recv("Data")
+    Note right of P1: MPI Communication
 ```
 
 #### Comparison of Sockets and MPI
@@ -470,39 +456,38 @@ note right: MPI Communication
 
 **Diagram**: MQS Flow
 
-```plantuml
-@startuml
-actor Sender
-participant "Queue Manager A" as QA
-participant Queue
-participant "Queue Manager B" as QB
-participant Receiver
-
-Sender -> QA: Put Message
-QA -> Queue: Store
-Queue -> QB: Forward
-QB -> Receiver: Get Message
-note right: MQS Flow
-@enduml
+```mermaid
+sequenceDiagram
+    participant Sender
+    participant QA as Queue Manager A
+    participant Queue
+    participant QB as Queue Manager B
+    participant Receiver
+    Sender->>QA: Put Message
+    QA->>Queue: Store
+    Queue->>QB: Forward
+    QB->>Receiver: Get Message
+    Note right of Receiver: MQS Flow
 ```
 
 #### General Architecture
 - **Components**: Queue managers, relays, routers.
-- **Diagram**:
 
-```dot
-digraph mqs {
-  rankdir=LR;
-  node [shape=box, style=filled, fillcolor=lightgreen, fontsize=12];
-  edge [color=navy];
-  Sender -> QMA [label="Put"];
-  QMA -> Queue [label="Store"];
-  Queue -> Relay [label="Forward"];
-  Relay -> QMB [label="Forward"];
-  QMB -> Receiver [label="Get"];
-  QMA [label="Queue Manager A"];
-  QMB [label="Queue Manager B"];
-}
+**Diagram**: MQS Architecture
+
+```mermaid
+graph LR
+    Sender --> QA[Queue Manager A]
+    QA --> Queue
+    Queue --> Relay
+    Relay --> QB[Queue Manager B]
+    QB --> Receiver
+    style Sender fill:#90ee90,stroke:#333
+    style QA fill:#90ee90,stroke:#333
+    style Queue fill:#90ee90,stroke:#333
+    style Relay fill:#90ee90,stroke:#333
+    style QB fill:#90ee90,stroke:#333
+    style Receiver fill:#90ee90,stroke:#333
 ```
 
 #### Message Brokers
@@ -511,19 +496,17 @@ digraph mqs {
 
 **Diagram**: Message Broker
 
-```plantuml
-@startuml
-actor Source
-participant Broker
-participant "Rules DB" as DB
-participant Destination
-
-Source -> Broker: Send XML
-Broker -> DB: Fetch Rules
-DB --> Broker: Rules
-Broker -> Destination: Deliver JSON
-note right: Message Broker
-@enduml
+```mermaid
+sequenceDiagram
+    participant Source
+    participant Broker
+    participant DB as Rules DB
+    participant Destination
+    Source->>Broker: Send XML
+    Broker->>DB: Fetch Rules
+    DB-->>Broker: Rules
+    Broker->>Destination: Deliver JSON
+    Note right of Destination: Message Broker
 ```
 
 #### Routing Mechanisms
@@ -534,10 +517,10 @@ note right: Message Broker
 | Application       | Example | Consistency |
 |-------------------|---------|-------------|
 | Email             | [Gmail](https://www.google.com/gmail/) | Eventual |
-| Workflow       | [Jenkins](https://www.jenkins.io/) | FIFO |
-| Groupware      | [Microsoft Teams](https://www.microsoft.com/en-us/microsoft-teams/) | Causal |
-| Batch Processing | [Apache Airflow](https://airflow.apache.org/) | Weak |
-| Integration    | [SAP](https://www.sap.com/) | Eventual |
+| Workflow          | [Jenkins](https://www.jenkins.io/) | FIFO |
+| Groupware         | [Microsoft Teams](https://www.microsoft.com/en-us/microsoft-teams/) | Causal |
+| Batch Processing  | [Apache Airflow](https://airflow.apache.org/) | Weak |
+| Integration       | [SAP](https://www.sap.com/) | Eventual |
 
 ### Evolution of Message-Oriented Middleware
 - **1980s**: Early queues for mainframes.
@@ -548,8 +531,10 @@ note right: Message Broker
 
 ### Theoretical Models
 - **Asynchronous Model**: Unbounded message delays.
-- **Synchronous Model]: Bounded delays.
+- **Synchronous Model**: Bounded delays.
 - **Reliability**: At-most-once, at-least-once, exactly-once semantics.
+
+---
 
 ## 3. Consistency and Replication
 
@@ -557,30 +542,32 @@ note right: Message Broker
 
 Replication maintains data copies across nodes to enhance durability, availability, throughput, and latency.
 
-### Benefits
+### Benefits of Replication
 
 - **Improving Durability**: Prevents data loss.
-  - **Example**: [MySQL](https://www.mysql.com/) replication
+  - **Example**: [MySQL](https://www.mysql.com/) replication.
 - **Improving Availability**: Ensures access during failures.
-  - **Example**: Google Search](https://www.google.com/) indexes.
+  - **Example**: [Google Search](https://www.google.com/) indexes.
 - **Increasing Throughput**: Distributes load.
   - **Example**: [Netflix](https://www.netflix.com/) streaming.
 - **Reducing Latency**: Local data access.
   - **Example**: [Cloudflare](https://www.cloudflare.com/) CDN.
 
-**Diagram**: Replication
+**Diagram**: Replication Structure
 
-```dot
-digraph replication {
-  rankdir=LR;
-  node [shape=circle, style=filled, fillcolor=lightyellow, fontsize=12];
-  edge [color=navy];
-  Master -> Replica1 [label="Sync"];
-  Master -> Replica2 [label="Sync"];
-  Client -> Master [label="Write"];
-  Client -> Replica1 [label="Read"];
-  Client -> Replica2 [label="Read"];
-}
+```mermaid
+graph LR
+    Client --> Master
+    Master --> Replica1[Replica 1]
+    Master --> Replica2[Replica 2]
+    Client --> Replica1
+    Client --> Replica2
+    linkStyle 0,3,4 stroke:#333
+    linkStyle 1,2 stroke:#333,stroke-dasharray:5
+    style Client fill:#ffffe0,stroke:#333
+    style Master fill:#ffffe0,stroke:#333
+    style Replica1 fill:#ffffe0,stroke:#333
+    style Replica2 fill:#ffffe0,stroke:#333
 ```
 
 ### Replication as a Scaling Technique
@@ -589,20 +576,20 @@ digraph replication {
 
 **Diagram**: Scaling with Replication
 
-```dot
-digraph scaling {
-  rankdir=LR;
-  node [shape=box, style=filled, fillcolor=lightcoral, fontsize=12];
-  edge [color=navy];
-  Client -> LB [label="Request"];
-  LB -> Replica1 [label="Read"];
-  LB -> Replica2 [label="Read"];
-  Replica1 -> Replica2 [label="Sync"];
-  LB [label="Load Balancer"];
-}
+```mermaid
+graph LR
+    Client --> LB[Load Balancer]
+    LB --> Replica1[Replica 1]
+    LB --> Replica2[Replica 2]
+    Replica1 --> Replica2
+    linkStyle 2 stroke:#333,stroke-dasharray:5
+    style Client fill:#ff4040,stroke:#333
+    style LB fill:#ff4040,stroke:#333
+    style Replica1 fill:#ff4040,stroke:#333
+    style Replica2 fill:#ff4040,stroke:#333
 ```
 
-### Challenges
+### Challenges of Replication
 1. **Consistency Challenges**: Ensuring coherence.
 2. **Synchronization Overhead**: Bandwidth for updates.
 3. **Conflict Resolution**: Concurrent writes.
@@ -611,425 +598,441 @@ digraph scaling {
 1. **Primary-Backup**: Single write node.
    - **Example**: [MySQL](https://www.mysql.com/) master-slave.
 2. **Multi-Master**: Multiple write nodes.
-   - **Example**: [Cassandra](https://www.cassandra.apache.org/).
+   - **Example**: [Cassandra](https://cassandra.apache.org/).
 3. **Quorum-Based**: Majority consensus.
    - **Example**: [Paxos](https://en.wikipedia.org/wiki/Paxos_(computer_science)).
 
 **Diagram**: Replication Strategies
 
-```dot
-digraph strategies {
-  rankdir=TB;
-  node [shape=box, style=filled, fillcolor=lightblue, fontsize=12];
-  edge [color=navy];
-  subgraph cluster_primary {
-    label="Primary-Backup";
-    Primary -> Backup1;
-    Primary -> Backup2;
-  }
-  subgraph cluster_multi {
-    label="Multi-Master";
-    Master1 -> Master2;
-    Master2 -> Master3;
-    Master3 -> Master1;
-  }
-}
+```mermaid
+graph TB
+    subgraph Primary-Backup
+        Primary --> Backup1
+        Primary --> Backup2
+    end
+    subgraph Multi-Master
+        Master1 --> Master2
+        Master2 --> Master3
+        Master3 --> Master1
+    end
+    style Primary fill:#add8e6,stroke:#333
+    style Backup1 fill:#add8e6,stroke:#333
+    style Backup2 fill:#add8e6,stroke:#333
+    style Master1 fill:#add8e6,stroke:#333
+    style Master2 fill:#add8e6,stroke:#333
+    style Master3 fill:#add8e6,stroke:#333
 ```
 
-### CAP Theorem
-- **Choose 2: Consistency, Availability, Partition Tolerance.
+### CAP Theorem and Replication
+- **Choose 2**: Consistency, Availability, Partition Tolerance.
 - **Example**: [Cassandra](https://cassandra.apache.org/) is AP; [Spanner](https://cloud.google.com/spanner/) is CP.
 
-### BASE vs. ACID
+### BASE vs. ACID Properties
 - **ACID**: Atomicity, Consistency, Isolation, Durability (e.g., SQL).
 - **BASE**: Basically Available, Soft State, Eventual Consistency (e.g., NoSQL).
 
-### Formal Models
-- **State Machine Replication**: Replicas as a state machines \( (S, s_0, \delta) \).
+### Formal Models of Replication
+- **State Machine Replication**: Replicas as state machines \( (S, s_0, \delta) \).
 - **Quorum Systems**: Read quorum \( R \) and write quorum \( W \) where \( R + W > N \).
+
+---
 
 ## 4. Data-Centric Consistency Models
 
-### Overview
+### Overview of Data-Centric Consistency
+
 Data-centric models define system-wide consistency.
 
-**Diagram**: Data Store
+**Diagram**: Data Store with Replicas
 
-```dot
-digraph data_store {
-  rankdir=LR;
-  node [shape=box, style=filled, fillcolor=lightgreen, fontsize=12];
-  edge [color=navy];
-  Process1 -> Copy1 [label="Read/Write"];
-  Process2 -> Copy2 [label="Read/Write"];
-  Copy1 -> DataStore [label="Sync"];
-  Copy2 -> DataStore [label="Sync"];
-  DataStore [label="Data Store"];
-}
+```mermaid
+graph LR
+    Process1 --> Copy1[Copy 1]
+    Process2 --> Copy2[Copy 2]
+    Copy1 --> DataStore[Data Store]
+    Copy2 --> DataStore
+    linkStyle 2,3 stroke:#333,stroke-dasharray:5
+    style Process1 fill:#90ee90,stroke:#333
+    style Process2 fill:#90ee90,stroke:#333
+    style Copy1 fill:#90ee90,stroke:#333
+    style Copy2 fill:#90ee90,stroke:#333
+    style DataStore fill:#90ee90,stroke:#333
 ```
 
 ### Strict Consistency
-- **Definition**: Reads return latest write.
-- **Challenges**: Global synchronization.
-- **Applications**: Banking.
+- **Formal Definition**: Reads return the latest write’s value, respecting real-time order.
+- **Implementation Challenges**: Requires global synchronization, high latency.
+- **Applications**: Banking transactions.
 
 **Diagram**: Strict Consistency
 
-```plantuml
-@startuml
-actor P1
-actor P2
-
-P1 -> x: Write x = a
-P2 -> x: Read x = a
-note right: Strict Consistency
-@enduml
+```mermaid
+sequenceDiagram
+    participant P1
+    participant P2
+    participant x
+    P1->>x: Write x = a
+    P2->>x: Read x = a
+    Note right of x: Strict Consistency
 ```
 
 ### Sequential Consistency
-- **Definition**: Global operation order.
-- **Applications**: File systems.
+- **Formal Definition**: Operations appear in a global sequential order, consistent across all processes.
+- **Implementation Details**: Uses timestamps or consensus.
+- **Applications**: Distributed file systems.
 
 **Diagram**: Sequential Consistency
 
-```plantuml
-@startuml
-actor P1
-actor P2
-actor P3
-actor P4
-
-P1 -> x: Write x = a
-P2 -> x: Write x = b
-P3 -> x: Read x = b
-P3 -> x: y: Read x = a
-P4 -> x: Read x = b
-P4 -> x: y: Read x = a
-note right: Sequential Consistency
-@enduml
+```mermaid
+sequenceDiagram
+    participant P1
+    participant P2
+    participant P3
+    participant P4
+    participant x
+    P1->>x: Write x = a
+    P2->>x: Write x = b
+    P3->>x: Read x = b
+    P3->>x: Read x = a
+    P4->>x: Read x = b
+    P4->>x: Read x = a
+    Note right of x: Sequential Consistency
 ```
 
 ### Causal Consistency
-- **Definition**: Causal write order preserved.
-- **Applications**: Social media.
+- **Formal Definition**: Causally related writes are ordered; unrelated writes may appear differently.
+- **Vector Clocks**: \( V(p_i) = [t_1, t_2, \ldots, t_n] \) tracks causality.
+- **Applications**: Social media posts.
 
 **Diagram**: Causal Consistency
 
-```plantuml
-@startuml
-actor P1
-actor P2
-actor P3
-actor P4
-
-P1 -> x: x: Write x = a
-P2 -> x: x: Read x = a
-P2 -> x: x: Write x = b
-P3 -> x: x: Read x: y = a
-P3 -> y: x: Read x: c
-P4 -> x: x: Read x: y = a
-P4 -> x -> y: Read x: b
-note right: Causal Consistency
-@enduml
+```mermaid
+sequenceDiagram
+    participant P1
+    participant P2
+    participant P3
+    participant P4
+    participant x
+    P1->>x: Write x = a
+    P2->>x: Read x = a
+    P2->>x: Write x = b
+    P3->>x: Read x = a
+    P3->>x: Read x = c
+    P4->>x: Read x = a
+    P4->>x: Read x = b
+    Note right of x: Causal Consistency
 ```
 
 ### FIFO Consistency
-- **Definition**: Per-process write order preserved.
+- **Formal Definition**: Per-process write order preserved; no global order.
+- **Implementation Details**: Local queues for writes.
 - **Applications**: Message queues.
 
 **Diagram**: FIFO Consistency
 
-```plantuml
-@startuml
-actor P1
-actor P2
-actor P3
-actor P4
-
-P1 -> x: Write x = a
-P2 -> x: Read x = a
-P2 -> x: Write x = b
-P2 -> y: Write x = c
-P3 -> x: Read x = b
-P3 -> x: Read x = a
-P4 -> x: Read x = a
-P4 -> x: Read x = b
-note right: FIFO Consistency
-@enduml
+```mermaid
+sequenceDiagram
+    participant P1
+    participant P2
+    participant P3
+    participant P4
+    participant x
+    P1->>x: Write x = a
+    P2->>x: Read x = a
+    P2->>x: Write x = b
+    P2->>x: Write x = c
+    P3->>x: Read x = b
+    P3->>x: Read x = a
+    P4->>x: Read x = a
+    P4->>x: Read x = b
+    Note right of x: FIFO Consistency
 ```
 
 ### Weak Consistency
-- **Definition**: Consistency at sync points.
-- **Applications**: Caching.
+- **Formal Definition**: Consistency enforced at synchronization points.
+- **Synchronization Variables**: Explicit sync operations.
+- **Applications**: Caching systems.
 
 **Diagram**: Weak Consistency
 
-```plantuml
-@startuml
-actor P1
-actor P2
-actor P3
-
-P1 -> x: Write x = a
-P1 -> x: Write x = b
-P1 -> Sync: Synchronize
-P2 -> x: Read x = a
-P2 -> x: Read x = b
-P2 -> Sync: Synchronize
-P3 -> x: Read x = b
-P3 -> x: Read x = a
-P3 -> Sync: Synchronize
-note right: Weak Consistency
-@enduml
+```mermaid
+sequenceDiagram
+    participant P1
+    participant P2
+    participant P3
+    participant x
+    participant Sync
+    P1->>x: Write x = a
+    P1->>x: Write x = b
+    P1->>Sync: Synchronize
+    P2->>x: Read x = a
+    P2->>x: Read x = b
+    P2->>Sync: Synchronize
+    P3->>x: Read x = b
+    P3->>x: Read x = a
+    P3->>Sync: Synchronize
+    Note right of x: Weak Consistency
 ```
 
 ### Release Consistency
-- **Definition**: Uses acquire/release.
-- **Applications**: Databases.
+- **Formal Definition**: Consistency via acquire/release operations.
+- **Acquire and Release Phases**: Lock-based synchronization.
+- **Applications**: Distributed databases.
 
 **Diagram**: Release Consistency
 
-```plantuml
-@startuml
-actor P1
-actor P2
-
-P1 -> Lock: Acquire
-P1 -> x: Write x = a
-P1 -> x: Write x = b
-P1 -> Lock: Release
-P2 -> Lock: Acquire
-P2 -> x: Read x = b
-P2 -> Lock: Release
-note right: Release Consistency
-@enduml
+```mermaid
+sequenceDiagram
+    participant P1
+    participant P2
+    participant Lock
+    participant x
+    P1->>Lock: Acquire
+    P1->>x: Write x = a
+    P1->>x: Write x = b
+    P1->>Lock: Release
+    P2->>Lock: Acquire
+    P2->>x: Read x = b
+    P2->>Lock: Release
+    Note right of x: Release Consistency
 ```
 
 ### Entry Consistency
-- **Definition**: Consistency per variable.
-- **Applications**: Shared memory.
+- **Formal Definition**: Consistency per synchronization variable.
+- **Synchronization Variables**: Variable-specific locks.
+- **Applications**: Distributed shared memory.
 
 **Diagram**: Entry Consistency
 
-```plantuml
-@startuml
-actor P1
-actor P2
-
-P1 -> Lx: Acquire Lock
-P1 -> x: Write x = a
-P1 -> Ly: Acquire Lock
-P1 -> y: Write y = b
-P1 -> Lx: Release Lock
-P1 -> Ly: Release Lock
-P2 -> Lx: Acquire Lock
-P2 -> x: Read x = a
-P2 -> y: Read y = NIL
-note right: Entry Consistency
-@enduml
+```mermaid
+sequenceDiagram
+    participant P1
+    participant P2
+    participant Lx as Lock x
+    participant Ly as Lock y
+    participant x
+    participant y
+    P1->>Lx: Acquire Lock
+    P1->>x: Write x = a
+    P1->>Ly: Acquire Lock
+    P1->>y: Write y = b
+    P1->>Lx: Release Lock
+    P1->>Ly: Release Lock
+    P2->>Lx: Acquire Lock
+    P2->>x: Read x = a
+    P2->>y: Read y = NIL
+    Note right of x: Entry Consistency
 ```
 
 ### Linearizability
-- **Definition**: Sequential with real-time order.
+- **Formal Definition**: Sequential consistency with real-time ordering.
+- **Comparison with Sequential Consistency**: Stricter real-time constraints.
 - **Applications**: [Google Spanner](https://cloud.google.com/spanner/).
 
 **Diagram**: Linearizability
 
-```plantuml
-@startuml
-actor P1
-actor P2
-actor P3
-
-P1 -> x: Write x = 1
-P1 -> yz: Print(y,z)
-P2 -> y: Write y = 1
-P2 -> xz: Print(x,z)
-P3 -> z: Write z = 1
-P3 -> xy: Print(x,y)
-note right: Linearizability
-@enduml
+```mermaid
+sequenceDiagram
+    participant P1
+    participant P2
+    participant P3
+    participant x
+    participant y
+    participant z
+    P1->>x: Write x = 1
+    P1->>y: Print(y,z)
+    P2->>y: Write y = 1
+    P2->>x: Print(x,z)
+    P3->>z: Write z = 1
+    P3->>x: Print(x,y)
+    Note right of x: Linearizability
 ```
 
-### Comparison of Protocols
-
+### Comparison of Data-Centric Models
 | Model                | Ordering Guarantee | Latency | Use Case |
-|----------------------|--------------------|---------|-----------|
-| Strict               | Absolute           | High    | Banking   |
-| Sequential           | Global          | Medium  | File Systems |
+|----------------------|--------------------|---------|----------|
+| Strict               | Absolute           | High    | Banking  |
+| Sequential           | Global             | Medium  | File Systems |
 | Causal               | Causal             | Medium  | Social Media |
-| FIFO                 | Per-Process        | Low     | Queues    |
-| Weak                 | Sync Points     | Low     | Caching     |
-| Release              | Acquire/Release | Medium    | Databases   |
-| Entry                | Per-Variable    | Medium-High | Shared Memory |
-| Linearizability      | Real-Time       | High       | Spanner      |
+| FIFO                 | Per-Process        | Low     | Queues   |
+| Weak                 | Sync Points        | Low     | Caching  |
+| Release              | Acquire/Release    | Medium  | Databases |
+| Entry                | Per-Variable       | Medium  | Shared Memory |
+| Linearizability      | Real-Time          | High    | Spanner  |
 
-### Formal Analysis
+### Formal Analysis of Consistency Models
 - **Consistency Hierarchy**: Strict > Linearizability > Sequential > Causal > FIFO > Weak.
-- **Lamport’s Model**: Operations as events with partial order.
+- **Lamport’s Model**: Operations as events with partial order \( \rightarrow \).
 
-## 5. Client-Centric Consistency
+---
 
-### Overview
-Client-centric models focus on individual client experiences.
+## 5. Client-Centric Consistency Models
+
+### Overview of Client-Centric Consistency
+
+Client-centric models ensure consistency for individual clients, ideal for mobile or multi-replica access.
 
 **Diagram**: Client-Centric Access
 
-```dot
-digraph client_centric {
-  rankdir=LR;
-  node [shape=box, style=filled, fillcolor=lightpink, fontsize=12];
-  edge [color=navy];
-  Client -> ReplicaA [label="Access"];
-  Client -> ReplicaB [label="Access"];
-  ReplicaA -> DataStore [label="Sync"];
-  ReplicaB -> DataStore [label="Sync"];
-  DataStore [label="Data Store"];
-}
+```mermaid
+graph LR
+    Client --> ReplicaA[Replica A]
+    Client --> ReplicaB[Replica B]
+    ReplicaA --> DataStore[Data Store]
+    ReplicaB --> DataStore
+    linkStyle 2,3 stroke:#333,stroke-dasharray:5
+    style Client fill:#ffb6c1,stroke:#333
+    style ReplicaA fill:#ffb6c1,stroke:#333
+    style ReplicaB fill:#ffb6c1,stroke:#333
+    style DataStore fill:#ffb6c1,stroke:#333
 ```
 
 ### Monotonic Reads
-- **Definition**: Successive reads return same/newer values.
-- **Example**: [Google Calendar](https://calendar.google.com/).
+- **Formal Definition**: Successive reads return same or newer values.
+- **Implementation Details**: Session-based tracking.
+- **Applications**: [Google Calendar](https://calendar.google.com/).
 
 **Diagram**: Monotonic Reads
 
-```plantuml
-@startuml
-actor Client
-participant L1
-participant L2
-
-L1 -> x: Write x = v1
-Client -> L1: Read x = v1
-L2 -> x: Write x = v2
-Client -> L2 ->: x: Read x = v2
-note right: Monotonic Reads
-@enduml
+```mermaid
+sequenceDiagram
+    participant Client
+    participant L1
+    participant L2
+    participant x
+    L1->>x: Write x = v1
+    Client->>L1: Read x = v1
+    L2->>x: Write x = v2
+    Client->>L2: Read x = v2
+    Note right of x: Monotonic Reads
 ```
 
 ### Monotonic Writes
-- **Definition**: Writes completed in order.
-- **Example**: [Git](https://git-scm.com/).
+- **Formal Definition**: Writes completed in order.
+- **Implementation Details**: Write ordering via queues.
+- **Applications**: [Git](https://git-scm.com/).
 
 **Diagram**: Monotonic Writes
 
-```plantuml
-@startuml
-actor Client
-participant L1
-participant L2
-
-Client -> L1: Write x = v1
-Client -> L2: Write x = v2
-note right: Monotonic Writes
-@enduml
+```mermaid
+sequenceDiagram
+    participant Client
+    participant L1
+    participant L2
+    participant x
+    Client->>L1: Write x = v1
+    Client->>L2: Write x = v2
+    Note right of x: Monotonic Writes
 ```
 
 ### Read-Your-Writes
-- **Definition**: Reads reflect prior writes.
-- **Example**: [WordPress](https://wordpress.org/).
+- **Formal Definition**: Reads reflect prior writes.
+- **Implementation Details**: Client-side caching.
+- **Applications**: [WordPress](https://wordpress.org/).
 
 **Diagram**: Read-Your-Writes
 
-```plantuml
-@startuml
-actor Client
-participant L1
-participant L2
-
-Client -> L1: Write x = v1
-Client -> L2: Read x = v1
-note right: Read-Your-Writes
-@enduml
+```mermaid
+sequenceDiagram
+    participant Client
+    participant L1
+    participant L2
+    participant x
+    Client->>L1: Write x = v1
+    Client->>L2: Read x = v1
+    Note right of x: Read-Your-Writes
 ```
 
 ### Writes-Follow-Reads
-- **Definition**: Writes based on prior reads.
-- **Example**: [Google Docs](https://docs.google.com/).
+- **Formal Definition**: Writes based on prior reads.
+- **Implementation Details**: Causal tracking.
+- **Applications**: [Google Docs](https://docs.google.com/).
 
 **Diagram**: Writes-Follow-Reads
 
-```plantuml
-@startuml
-actor Client
-participant L1
-participant L2
-
-Client -> L1: Read x = v1
-Client -> L2: Write x = v2
-note right: Writes-Follow-Reads
-@enduml
+```mermaid
+sequenceDiagram
+    participant Client
+    participant L1
+    participant L2
+    participant x
+    Client->>L1: Read x = v1
+    Client->>L2: Write x = v2
+    Note right of x: Writes-Follow-Reads
 ```
 
 ### Consistency for Mobile Users
-- **Definition**: Consistency across locations.
-- **Example**: [Dropbox](https://www.dropbox.com/).
+- **Scenario and Challenges**: Ensure consistency across locations.
+- **Implementation Details**: Replica synchronization.
+- **Applications**: [Dropbox](https://www.dropbox.com/).
 
-**Diagram**: 
+**Diagram**: Mobile User Consistency
 
-```plantuml
-@startuml
-actor User
-participant "Replica A" as RA
-participant "Replica B" as RB
-
-User -> RA: Write x = v1
-User -> RB: Read x = v1
-note right: Mobile User Consistency
-@enduml
+```mermaid
+sequenceDiagram
+    participant User
+    participant RA as Replica A
+    participant RB as Replica B
+    participant x
+    User->>RA: Write x = v1
+    User->>RB: Read x = v1
+    Note right of x: Mobile User Consistency
 ```
 
 ### Eventual Consistency
-- **Definition**: Replicas converge.
-- **Example**: DNS.
+- **Formal Definition**: Replicas converge without updates.
+- **Implementation Details**: Background propagation.
+- **Applications**: DNS.
 
 **Diagram**: Eventual Consistency
 
-```plantuml
-@startuml
-actor Client
-participant "Replica A" as RA
-participant "Replica B" as RB
-
-Client -> RA: Write x = v1
-RA -> RB: Propagate
-Client -> RB: Read x = v1
-note right: Eventual Consistency
-@enduml
+```mermaid
+sequenceDiagram
+    participant Client
+    participant RA as Replica A
+    participant RB as Replica B
+    participant x
+    Client->>RA: Write x = v1
+    RA->>RB: Propagate
+    Client->>RB: Read x = v1
+    Note right of x: Eventual Consistency
 ```
 
-### Comparison of Protocols
-
-| Model                | Guarantee             | Use Case |
-|----------------------|-----------------------|-------------|
-| Monotonic Reads     | Non-decreasing Reads   | Calendars   |
-| Monotonic Writes    | Write Order           | Version Control |
-| Read-Your-Writes    | Write Visibility     | CMS         |
-| Writes-Follow-Reads | Read-Based Writes  | Collaborative Docs |
-| Eventual Consistency | Convergence       | DNS         |
+### Comparison of Client-Centric Models
+| Model                | Guarantee             | Use Case            |
+|----------------------|-----------------------|---------------------|
+| Monotonic Reads      | Non-decreasing Reads  | Calendars           |
+| Monotonic Writes     | Write Order           | Version Control     |
+| Read-Your-Writes     | Write Visibility      | CMS                 |
+| Writes-Follow-Reads  | Read-Based Writes     | Collaborative Docs  |
+| Eventual Consistency | Convergence           | DNS                 |
 
 ### Theoretical Underpinnings
 - **Session Guarantees**: Ensure client-side consistency.
 - **Example**: Sticky sessions in load balancers.
 
+---
+
 ## 6. Continuous Consistency
 
-### Overview
+### Overview of Continuous Consistency
 
-Allows bounded inconsistencies.
+Allows bounded inconsistencies for performance.
 
 ### Numerical Deviations
-- **Definition**: Limit value differences.
-- **Example**: Stock prices.
+- **Formal Definition**: Limits value differences (\( |v_i - v_j| \leq \epsilon \)).
+- **Implementation Details**: Threshold checks.
+- **Applications**: Stock prices.
 
 ### Staleness Deviations
-- **Definition**: Limit data age.
-- **Example**: Weather updates.
+- **Formal Definition**: Limits data age (\( t_{\text{current}} - t_{\text{update}} \leq \delta \)).
+- **Implementation Details**: Timestamps.
+- **Applications**: Weather updates.
 
 ### Ordering Deviations
-- **Definition**: Limit order discrepancies.
-- **Example**: Content delivery.
+- **Formal Definition**: Limits order discrepancies.
+- **Implementation Details**: Operation logs.
+- **Applications**: Content delivery.
 
 ### Practical Implementation
 - **Thresholds**: Define bounds.
@@ -1037,20 +1040,21 @@ Allows bounded inconsistencies.
 
 **Diagram**: Continuous Consistency
 
-```plantuml
-@startuml
-actor Client
-participant "Replica A" as RA
-participant "Replica B" as RB
-
-Client -> RA: Write x = v1
-RA -> RB: Propagate (within bounds)
-note right: Continuous Consistency
-@enduml
+```mermaid
+sequenceDiagram
+    participant Client
+    participant RA as Replica A
+    participant RB as Replica B
+    participant x
+    Client->>RA: Write x = v1
+    RA->>RB: Propagate (within bounds)
+    Note right of x: Continuous Consistency
 ```
 
 ### Theoretical Analysis
 - **Bounded Consistency**: \( \Delta(v_i, v_j) \leq \epsilon \) for replicas.
+
+---
 
 ## 7. Conit (Consistency Unit) Example
 
@@ -1058,38 +1062,38 @@ note right: Continuous Consistency
 - **Definition**: Tracks consistency for data units.
 - **Example**: Stock price tracking.
 
-### Vector Clocks
+### Vector Clocks in Conits
 - **Definition**: \( V(p_i) = [t_1, t_2, \ldots, t_n] \).
 
 ### Detailed Example
-- **Setup**: Conit for \( x, replicas A, B.
+- **Setup**: Conit for `x`, replicas A, B.
 - **State**:
-  - **A**: `(15,5)`, Order deviation `3`, Numerical `(1,5)`).
-  - **B**: `(0,6)`, Order deviation `2`, Numerical `(2,6)`).
-- **Operation**: B sends `x += 1`.
+  - A: `(15,5)`, Order deviation `3`, Numerical `(1,5)`.
+  - B: `(0,11)`, Order deviation `2`, Numerical `(3,6)`.
+- **Operation**: B sends `x += 2`.
 
-**Diagram**: Conit
+**Diagram**: Conit with Vector Clocks
 
-```plantuml
-@startuml
-participant "Replica A" as RA
-participant "Replica B" as RB
-
-RA -> RB: Sync State
-RB -> RA: Write x += 1
-note right: Conit with Vector Clocks
-@enduml
+```mermaid
+sequenceDiagram
+    participant RA as Replica A
+    participant RB as Replica B
+    RA->>RB: Sync State
+    RB->>RA: Write x += 2
+    Note right of RA: Conit with Vector Clocks
 ```
 
-### Applications
+### Applications of Conits
 - **Dynamic Systems**: E-commerce pricing.
 
-### Formal Model
+### Formal Model of Conits
 - **Conit State**: \( (V_C, \Delta_o, \Delta_n) \), where \( V_C \) is vector clock.
 
-## 8. Fault Tolerance
+---
 
-### Overview
+## 8. Fault Tolerance in Distributed Systems
+
+### Overview of Fault Tolerance
 Ensures system reliability despite failures.
 
 ### Types of Faults
@@ -1099,13 +1103,15 @@ Ensures system reliability despite failures.
 ### Fault Tolerance Techniques
 - **Replication**: Data copies.
 - **Checkpointing**: Save states.
-- **Consensus**: Agreement protocols.
+- **Consensus Algorithms**: Agreement protocols (e.g., Paxos, Raft).
 
 ### Case Study: Apache Cassandra
 - **Mechanism**: Tunable consistency, gossip protocol.
 
-### Theoretical Models
+### Theoretical Models of Fault Tolerance
 - **Failure Detectors**: Completeness, accuracy.
+
+---
 
 ## 9. Real-World Examples
 
@@ -1113,20 +1119,18 @@ Ensures system reliability despite failures.
 - **Model**: Eventual consistency.
 - **Example**: Domain updates.
 
-**Diagram**: DNS
+**Diagram**: DNS Eventual Consistency
 
-```plantuml
-@startuml
-actor Client
-participant Resolver
-participant "Authority" as AS
-
-Client -> Resolver: Query Domain
-Resolver -> AS: Fetch Update
-AS --> Resolver: Latest IP
-Resolver --> Client: IP Address
-note right: DNS Eventual Consistency
-@enduml
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Resolver
+    participant AS as Authority
+    Client->>Resolver: Query Domain
+    Resolver->>AS: Fetch Update
+    AS-->>Resolver: Latest IP
+    Resolver-->>Client: IP Address
+    Note right of AS: DNS Eventual Consistency
 ```
 
 ### NEWS Articles
@@ -1135,7 +1139,7 @@ note right: DNS Eventual Consistency
 
 ### Lotus Notes
 - **Model**: Weak consistency.
-- **Example**: [HCL Notes](https://www.hcltech.com/).
+- **Example**: [HCL Notes](https://www.hcltechsw.com/notes/).
 
 ### WWW Caches
 - **Model**: Eventual consistency.
@@ -1143,39 +1147,43 @@ note right: DNS Eventual Consistency
 
 ### Additional Examples
 - **[Google Spanner](https://cloud.google.com/spanner/)**: Linearizability.
-- **[Apache Kafka](https://kafka.apache.org/):: FIFO.
-- **[Amazon DynamoDB](https://aws.amazon.com/dynamodb/):: Configurable.
-- **[Hadoop HDFS](https://hadoop.apache.org/):: Sequential.
-- **[Kubernetes](https://kubernetes.io/):: Orchestration.
+- **[Apache Kafka](https://kafka.apache.org/)**: FIFO.
+- **[Amazon DynamoDB](https://aws.amazon.com/dynamodb/)**: Configurable.
+- **[Hadoop HDFS](https://hadoop.apache.org/)**: Sequential.
+- **[Kubernetes](https://kubernetes.io/)**: Orchestration.
+
+---
 
 ## 10. Distributed Systems in Practice
 
 ### Cloud Computing
 - **Example**: [AWS](https://aws.amazon.com/).
 
-### Microservices
+### Microservices Architecture
 - **Example**: [Uber](https://www.uber.com/).
 
-### Serverless
+### Serverless Computing
 - **Example**: [AWS Lambda](https://aws.amazon.com/lambda/).
 
-### Blockchain
+### Blockchain and Decentralized Systems
 - **Example**: [Ethereum](https://ethereum.org/).
 
 ### Edge Computing
 - **Example**: IoT devices.
 
+---
+
 ## 11. Conclusion
 
-### Summary
-Covers distributed systems comprehensively.
+### Summary of Key Concepts
+Covers distributed systems comprehensively, including communication, consistency, replication, and fault tolerance.
 
-### Study Tips
-- **Review**: Diagrams for clarity.
-- **Practice**: Relate to examples.
-- **Questions**: Understand trade-offs.
+### Study Tips for Exam Preparation
+- **Review Diagrams**: Understand process interactions.
+- **Practice Examples**: Relate to real-world systems.
+- **Understand Trade-offs**: Consistency vs. availability.
 
 ### Thought Questions
-1. How does CAP theorem affect design?
-2. Compare consistency models.
-3. Discuss fault tolerance in [Cassandra](https://cassandra.apache.org/).
+1. How does the CAP theorem influence system design?
+2. Compare data-centric and client-centric consistency models.
+3. Discuss fault tolerance mechanisms in [Cassandra](https://cassandra.apache.org/).
